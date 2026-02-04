@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <div class="dashboard-header">
+        <h2>Municipality Admin Dashboard</h2>
+        <button onclick="logout()" class="btn logout-btn">Logout</button>
+    </div>
+
+    <div class="container">
+        <!-- Stats Cards -->
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            <div class="card" style="text-align: center;">
+                <h3>Total Complaints</h3>
+                <p id="total-initial" style="font-size: 2rem; font-weight: bold; color: var(--primary-color);">0</p>
+            </div>
+            <div class="card" style="text-align: center;">
+                <h3>Resolved</h3>
+                <p id="resolved-count" style="font-size: 2rem; font-weight: bold; color: var(--success-color);">0</p>
+            </div>
+            <div class="card" style="text-align: center;">
+                <h3>Pending</h3>
+                <p id="pending-count" style="font-size: 2rem; font-weight: bold; color: #d97706;">0</p>
+            </div>
+        </div>
+
+        <h3 style="margin-bottom: 1rem;">All Complaints Overview</h3>
+        <div id="complaints-list">
+            <p>Loading all complaints...</p>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', loadAdminDashboard);
+    </script>
+</body>
+
+</html>

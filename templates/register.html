@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Municipality Complaint System</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1 class="auth-title">Create Account</h1>
+            <div id="error-msg" class="error-message"></div>
+            <form id="register-form">
+                <div class="form-group">
+                    <label class="form-label" for="full_name">Full Name</label>
+                    <input type="text" id="full_name" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="email">Email Address</label>
+                    <input type="email" id="email" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" class="form-input" required>
+                </div>
+                <!-- Simple Role Selection for Demo -->
+                <div class="form-group">
+                    <label class="form-label" for="role">Register As</label>
+                    <select id="role" class="form-input">
+                        <option value="citizen">Citizen</option>
+                        <option value="officer">Department Officer</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group" id="dept-group" style="display: none;">
+                    <label class="form-label" for="department_id">Department ID (For Officers)</label>
+                    <input type="number" id="department_id" class="form-input" placeholder="Enter Dept ID">
+                </div>
+
+                <button type="submit" class="btn">Register</button>
+            </form>
+            <div class="auth-link">
+                Already have an account? <a href="/login">Login here</a>
+            </div>
+        </div>
+    </div>
+    <script src="/static/js/auth.js"></script>
+</body>
+
+</html>
