@@ -1,22 +1,26 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Chakra_Petch, Rajdhani } from "next/font/google";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import "../globals.css";
 
-const geistSans = Geist({
-    variable: "--font-geist-sans",
+const chakraPetch = Chakra_Petch({
+    variable: "--font-chakra",
     subsets: ["latin"],
+    weight: ["400", "500", "600", "700"],
+    display: "swap",
 });
 
-const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
+const rajdhani = Rajdhani({
+    variable: "--font-rajdhani",
     subsets: ["latin"],
+    weight: ["300", "400", "500", "600", "700"],
+    display: "swap",
 });
 
 export const metadata: Metadata = {
-    title: "Smart Civic & Safety Management System",
-    description: "Report issues and accidents instantly.",
+    title: "SCSMS — Smart Civic & Safety Management System",
+    description: "Tactical operations platform for civic issue reporting and emergency response.",
 };
 
 export default async function RootLayout({
@@ -30,10 +34,11 @@ export default async function RootLayout({
     const messages = await getMessages();
 
     return (
-        <html lang={locale}>
+        <html lang={locale} className="dark">
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+                className={`${chakraPetch.variable} ${rajdhani.variable} antialiased tactical-bg`}
             >
+                <div className="grain-overlay" aria-hidden="true" />
                 <NextIntlClientProvider messages={messages}>
                     {children}
                 </NextIntlClientProvider>

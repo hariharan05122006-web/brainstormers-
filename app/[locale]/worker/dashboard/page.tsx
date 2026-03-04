@@ -1,10 +1,9 @@
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { redirect } from "next/navigation";
-import { MapPin, Navigation, CheckCircle, Clock, AlertTriangle, LogOut, Bell } from "lucide-react";
+import { MapPin, Navigation, CheckCircle, Clock, AlertTriangle, LogOut } from "lucide-react";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 
 export default async function WorkerDashboard() {
@@ -23,10 +22,17 @@ export default async function WorkerDashboard() {
         .single();
 
     if (!worker) {
-        return <div className="p-10 text-red-600 text-center font-bold text-xl">Error: Worker profile not found for {user.email}</div>;
+        return (
+            <div className="min-h-screen relative z-10 flex items-center justify-center">
+                <div className="card-tactical p-8 text-center">
+                    <span className="font-mono text-[10px] tracking-[0.15em] text-[#e84040] uppercase">⚠ Error:</span>
+                    <p className="text-[#e8e1d5] mt-2">Worker profile not found for {user.email}</p>
+                </div>
+            </div>
+        );
     }
 
-    // Fetch ALL Complaints for this Department to calculate stats
+    // Fetch ALL Complaints for this Department
     const { data: allTasks } = await supabase
         .from("complaints")
         .select("*")
@@ -39,142 +45,173 @@ export default async function WorkerDashboard() {
     const pendingTasks = activeTasks.length;
 
     return (
-        <div className="flex min-h-screen flex-col bg-gray-50/50">
-            {/* Premium Header */}
-            <header className="sticky top-0 z-30 flex h-20 items-center gap-4 border-b bg-white/80 px-6 backdrop-blur-xl transition-all">
-                <div className="flex flex-1 items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 shadow-lg shadow-blue-500/20">
-                        <MapPin className="h-6 w-6 text-white" />
+        <div className="min-h-screen relative z-10">
+            {/* Header */}
+            <header className="sticky top-0 z-30 border-b border-[#1e2436] bg-[#0a0c10]/90 backdrop-blur-md">
+                <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="w-9 h-9 flex items-center justify-center bg-[#d4a853]/10 border border-[#d4a853]/30">
+                            <MapPin className="h-4 w-4 text-[#d4a853]" />
+                        </div>
+                        <div>
+                            <h1 className="text-lg font-bold tracking-tight text-[#e8e1d5]" style={{ fontFamily: 'var(--font-chakra)' }}>
+                                Field Operations
+                            </h1>
+                            <p className="font-mono text-[10px] tracking-[0.15em] text-[#6b7280] uppercase">
+                                {worker.departments?.name} Dept
+                            </p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 className="text-xl font-bold text-gray-900 tracking-tight">Worker Dashboard</h1>
-                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{worker.departments?.name} Department</p>
+                    <div className="flex items-center gap-3">
+                        <div className="hidden md:flex flex-col items-end mr-2">
+                            <span className="text-sm font-semibold text-[#e8e1d5]">{worker.name}</span>
+                            <span className="font-mono text-[10px] text-[#6b7280]">{user.email}</span>
+                        </div>
+                        <NotificationBell />
+                        <form action="/auth/signout" method="post">
+                            <button className="w-9 h-9 flex items-center justify-center text-[#6b7280] hover:text-[#e84040] hover:bg-[#e84040]/10 transition-all cursor-pointer border border-transparent hover:border-[#e84040]/30">
+                                <LogOut className="h-4 w-4" />
+                            </button>
+                        </form>
                     </div>
-                </div>
-                <div className="flex items-center gap-3">
-                    <div className="hidden md:flex flex-col items-end mr-4">
-                        <span className="text-sm font-semibold text-gray-900">{worker.name}</span>
-                        <span className="text-xs text-gray-500">{user.email}</span>
-                    </div>
-                    <NotificationBell />
-                    <form action="/auth/signout" method="post">
-                        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors">
-                            <LogOut className="h-5 w-5" />
-                        </Button>
-                    </form>
                 </div>
             </header>
 
-            <main className="flex-1 p-6 md:p-8 space-y-8 max-w-7xl mx-auto w-full">
-                {/* Stats Overview */}
-                <div className="grid gap-4 md:grid-cols-3">
-                    <Card className="bg-gradient-to-br from-white to-blue-50/50 border-blue-100 shadow-sm hover:shadow-md transition-all duration-300">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-gray-600">Active Tasks</CardTitle>
-                            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                                <AlertTriangle className="h-4 w-4 text-blue-600" />
+            <main className="max-w-7xl mx-auto p-6 md:p-8 space-y-8">
+                {/* Stats HUD */}
+                <div className="grid gap-4 md:grid-cols-3" style={{ animation: 'fade-up 0.5s ease-out both' }}>
+                    {/* Active Tasks */}
+                    <div className="card-tactical p-5 glow-border">
+                        <div className="flex items-center justify-between mb-3">
+                            <span className="font-mono text-[10px] tracking-[0.15em] text-[#d4a853] uppercase">Active Ops</span>
+                            <div className="w-8 h-8 flex items-center justify-center bg-[#d4a853]/10 border border-[#d4a853]/20">
+                                <AlertTriangle className="h-4 w-4 text-[#d4a853]" />
                             </div>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-bold text-gray-900">{pendingTasks}</div>
-                            <p className="text-xs text-gray-500 mt-1">Tasks requiring attention</p>
-                        </CardContent>
-                    </Card>
-                    <Card className="bg-gradient-to-br from-white to-green-50/50 border-green-100 shadow-sm hover:shadow-md transition-all duration-300">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-gray-600">Completed</CardTitle>
-                            <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
-                                <CheckCircle className="h-4 w-4 text-green-600" />
+                        </div>
+                        <div className="text-4xl font-bold text-[#e8e1d5]" style={{ fontFamily: 'var(--font-chakra)' }}>
+                            {pendingTasks}
+                        </div>
+                        <p className="font-mono text-[10px] text-[#6b7280] mt-1 tracking-wider">Tasks requiring action</p>
+                    </div>
+
+                    {/* Completed */}
+                    <div className="card-tactical p-5" style={{ borderTopColor: '#2dd4a8' }}>
+                        <div className="flex items-center justify-between mb-3">
+                            <span className="font-mono text-[10px] tracking-[0.15em] text-[#2dd4a8] uppercase">Completed</span>
+                            <div className="w-8 h-8 flex items-center justify-center bg-[#2dd4a8]/10 border border-[#2dd4a8]/20">
+                                <CheckCircle className="h-4 w-4 text-[#2dd4a8]" />
                             </div>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-bold text-gray-900">{completedTasks}</div>
-                            <p className="text-xs text-gray-500 mt-1">Total tasks finished</p>
-                        </CardContent>
-                    </Card>
-                    <Card className="bg-gradient-to-br from-white to-purple-50/50 border-purple-100 shadow-sm hover:shadow-md transition-all duration-300">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-gray-600">Efficiency</CardTitle>
-                            <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center">
-                                <Clock className="h-4 w-4 text-purple-600" />
+                        </div>
+                        <div className="text-4xl font-bold text-[#e8e1d5]" style={{ fontFamily: 'var(--font-chakra)' }}>
+                            {completedTasks}
+                        </div>
+                        <p className="font-mono text-[10px] text-[#6b7280] mt-1 tracking-wider">Total resolved</p>
+                    </div>
+
+                    {/* Efficiency */}
+                    <div className="card-tactical p-5" style={{ borderTopColor: '#6b7280' }}>
+                        <div className="flex items-center justify-between mb-3">
+                            <span className="font-mono text-[10px] tracking-[0.15em] text-[#6b7280] uppercase">Efficiency</span>
+                            <div className="w-8 h-8 flex items-center justify-center bg-[#6b7280]/10 border border-[#6b7280]/20">
+                                <Clock className="h-4 w-4 text-[#6b7280]" />
                             </div>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-bold text-gray-900">98%</div>
-                            <p className="text-xs text-gray-500 mt-1">On-time completion rate</p>
-                        </CardContent>
-                    </Card>
+                        </div>
+                        <div className="text-4xl font-bold text-[#e8e1d5]" style={{ fontFamily: 'var(--font-chakra)' }}>
+                            98<span className="text-lg text-[#6b7280]">%</span>
+                        </div>
+                        <p className="font-mono text-[10px] text-[#6b7280] mt-1 tracking-wider">On-time rate</p>
+                    </div>
                 </div>
 
                 {/* Tasks Section */}
-                <div>
+                <div style={{ animation: 'fade-up 0.5s ease-out 0.15s both' }}>
                     <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                            <span className="h-6 w-1 rounded-full bg-blue-600"></span>
-                            Assigned Tasks
-                        </h2>
-                        <Badge variant="outline" className="px-3 py-1 border-gray-300 text-gray-600">
+                        <h2 className="section-header text-lg">Assigned Tasks</h2>
+                        <span className="font-mono text-[10px] tracking-[0.15em] text-[#d4a853] uppercase px-3 py-1 border border-[#d4a853]/30 bg-[#d4a853]/5">
                             {activeTasks.length} Pending
-                        </Badge>
+                        </span>
                     </div>
 
                     {activeTasks.length > 0 ? (
-                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                            {activeTasks.map((task) => (
-                                <Card key={task.id} className="group overflow-hidden border-gray-200 bg-white shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                                    <div className="h-2 w-full bg-gradient-to-r from-blue-500 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                    <CardHeader className="pb-3">
-                                        <div className="flex justify-between items-start mb-2">
-                                            <Badge variant={task.status === 'assigned' ? 'default' : 'secondary'} className={task.status === 'assigned' ? "bg-blue-100 text-blue-700 hover:bg-blue-200 border-0" : "bg-gray-100 text-gray-700 border-0"}>
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                            {activeTasks.map((task, index) => (
+                                <div
+                                    key={task.id}
+                                    className="card-tactical group overflow-hidden hover:border-[#d4a85360] transition-all duration-300"
+                                    style={{ animationDelay: `${0.05 * index}s` }}
+                                >
+                                    {/* Hover accent bar */}
+                                    <div className="h-0.5 w-full bg-gradient-to-r from-[#d4a853] to-[#f0c040] opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                                    <div className="p-5">
+                                        {/* Status & Date */}
+                                        <div className="flex justify-between items-start mb-3">
+                                            <span className={`font-mono text-[10px] tracking-[0.15em] uppercase px-2 py-0.5 border ${task.status === 'assigned'
+                                                    ? 'text-[#d4a853] border-[#d4a853]/30 bg-[#d4a853]/10'
+                                                    : 'text-[#6b7280] border-[#1e2436] bg-[#1e2436]'
+                                                }`}>
                                                 {task.status}
-                                            </Badge>
-                                            <span className="text-[10px] font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded-full border border-gray-100">
+                                            </span>
+                                            <span className="font-mono text-[10px] text-[#6b728060]">
                                                 {new Date(task.created_at).toLocaleDateString()}
                                             </span>
                                         </div>
-                                        <CardTitle className="text-lg font-bold text-gray-900 leading-tight group-hover:text-blue-600 transition-colors">
+
+                                        {/* Title */}
+                                        <h3 className="text-base font-bold text-[#e8e1d5] mb-2 group-hover:text-[#d4a853] transition-colors leading-tight" style={{ fontFamily: 'var(--font-chakra)' }}>
                                             {task.title}
-                                        </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="pb-4">
-                                        <p className="text-sm text-gray-500 line-clamp-3 mb-4 leading-relaxed">
+                                        </h3>
+
+                                        {/* Description */}
+                                        <p className="text-sm text-[#6b7280] line-clamp-2 mb-4 leading-relaxed">
                                             {task.description}
                                         </p>
-                                        
-                                        <div className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 border border-gray-100">
-                                            <div className="h-8 w-8 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm">
-                                                <MapPin className="h-4 w-4 text-red-500" />
+
+                                        {/* Location */}
+                                        <div className="flex items-center gap-3 p-3 bg-[#0a0c10] border border-[#1e2436] mb-4">
+                                            <div className="w-8 h-8 flex items-center justify-center bg-[#e84040]/10 border border-[#e84040]/20 flex-shrink-0">
+                                                <MapPin className="h-3.5 w-3.5 text-[#e84040]" />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-xs font-medium text-gray-900 truncate">Location Coordinates</p>
-                                                <p className="text-[10px] text-gray-500 truncate">{task.latitude.toFixed(5)}, {task.longitude.toFixed(5)}</p>
+                                                <p className="font-mono text-[10px] tracking-[0.1em] text-[#e8e1d5] uppercase">Coordinates</p>
+                                                <p className="font-mono text-[10px] text-[#6b7280] truncate">
+                                                    {task.latitude.toFixed(5)}, {task.longitude.toFixed(5)}
+                                                </p>
                                             </div>
                                         </div>
-                                    </CardContent>
-                                    <CardFooter className="pt-0 gap-3">
-                                        <Link href={`https://www.google.com/maps/dir/?api=1&destination=${task.latitude},${task.longitude}`} target="_blank" className="flex-1">
-                                            <Button variant="outline" className="w-full border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-300 transition-all font-medium">
-                                                <Navigation className="h-3.5 w-3.5 mr-2" /> Navigate
-                                            </Button>
-                                        </Link>
-                                        <Link href={`/worker/complaint/${task.id}/complete`} className="flex-1">
-                                            <Button className="w-full bg-gray-900 hover:bg-black text-white transition-all shadow-md hover:shadow-lg font-medium">
-                                                <CheckCircle className="h-3.5 w-3.5 mr-2" /> Complete
-                                            </Button>
-                                        </Link>
-                                    </CardFooter>
-                                </Card>
+
+                                        {/* Actions */}
+                                        <div className="flex gap-2">
+                                            <Link href={`https://www.google.com/maps/dir/?api=1&destination=${task.latitude},${task.longitude}`} target="_blank" className="flex-1">
+                                                <button className="btn-command-ghost w-full h-9 text-[11px] rounded-none cursor-pointer flex items-center justify-center gap-1.5">
+                                                    <Navigation className="h-3 w-3" /> Navigate
+                                                </button>
+                                            </Link>
+                                            <Link href={`/worker/complaint/${task.id}/complete`} className="flex-1">
+                                                <button className="btn-command w-full h-9 text-[11px] rounded-none cursor-pointer flex items-center justify-center gap-1.5">
+                                                    <CheckCircle className="h-3 w-3" /> Complete
+                                                </button>
+                                            </Link>
+                                        </div>
+                                    </div>
+                                </div>
                             ))}
                         </div>
                     ) : (
-                        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-dashed border-gray-200 text-center">
-                            <div className="h-20 w-20 bg-green-50 rounded-full flex items-center justify-center mb-4 animate-pulse">
-                                <CheckCircle className="h-10 w-10 text-green-500" />
+                        <div className="card-tactical flex flex-col items-center justify-center py-16 text-center">
+                            <div className="w-16 h-16 flex items-center justify-center bg-[#2dd4a8]/10 border border-[#2dd4a8]/20 mb-4">
+                                <CheckCircle className="h-8 w-8 text-[#2dd4a8]" />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900">All Caught Up!</h3>
-                            <p className="text-gray-500 mt-2 max-w-sm">
-                                Excellent work! You have no pending tasks assigned at the moment. Relax and wait for new assignments.
+                            <h3 className="text-lg font-bold text-[#e8e1d5] mb-1" style={{ fontFamily: 'var(--font-chakra)' }}>
+                                All Clear
+                            </h3>
+                            <p className="text-sm text-[#6b7280] max-w-sm">
+                                No pending tasks assigned. Stand by for new assignments.
                             </p>
+                            <div className="mt-4 flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#2dd4a8] shadow-[0_0_6px_#2dd4a8]" style={{ animation: 'blink-status 2s ease-in-out infinite' }} />
+                                <span className="font-mono text-[10px] tracking-[0.15em] text-[#2dd4a8] uppercase">Standby Mode</span>
+                            </div>
                         </div>
                     )}
                 </div>

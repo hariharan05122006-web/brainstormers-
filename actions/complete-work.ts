@@ -95,4 +95,8 @@ export async function completeWorkAction(formData: FormData) {
         revalidatePath('/worker/dashboard');
         revalidatePath(`/worker/complaint/${complaintId}`);
         return { success: true };
+    } catch (err: any) {
+        console.error('Complete Work Error:', err);
+        return { error: err.message || 'An unexpected error occurred.' };
     }
+}

@@ -9,103 +9,109 @@ export default async function AdminDashboard() {
     // Fetch stats
     const { count: workerCount } = await supabase.from('workers').select('*', { count: 'exact', head: true });
     const { count: complaintCount } = await supabase.from('complaints').select('*', { count: 'exact', head: true });
-    // Fix: pendingCount query was selecting all columns instead of just count
     const { count: pendingCount } = await supabase.from('complaints').select('*', { count: 'exact', head: true }).eq('status', 'pending');
     const { count: incidentCount } = await supabase.from('incidents').select('*', { count: 'exact', head: true }).eq('priority', 'HIGH');
 
     return (
-        <div className="min-h-screen bg-black relative text-white selection:bg-red-500/30">
-            {/* Background Image with Overlay */}
-            <div
-                className="fixed inset-0 z-0"
-                style={{
-                    backgroundImage: "url('https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=1600')", // Different city/admin vibe
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                }}
-            >
-                <div className="absolute inset-0 bg-black/80 backdrop-blur-[2px]" />
-            </div>
-
-            <div className="relative z-10 container mx-auto p-6 md:p-8 space-y-8">
-                <div className="flex justify-between items-center border-b border-white/10 pb-6">
-                    <div>
-                        <h2 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-red-500">
-                            Admin Dashboard
-                        </h2>
-                        <p className="text-gray-400 mt-1">System Overview & Management</p>
+        <div className="min-h-screen relative z-10">
+            {/* Header */}
+            <header className="sticky top-0 z-30 border-b border-[#1e2436] bg-[#0a0c10]/90 backdrop-blur-md">
+                <div className="container mx-auto px-6 h-16 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-[#e84040] shadow-[0_0_8px_#e84040]" style={{ animation: 'blink-status 1.5s ease-in-out infinite' }} />
+                            <span className="font-mono text-[10px] tracking-[0.2em] text-[#e84040] uppercase">Admin</span>
+                        </div>
+                        <div className="h-4 w-px bg-[#1e2436]" />
+                        <h1 className="text-xl font-bold tracking-tight text-[#e8e1d5]" style={{ fontFamily: 'var(--font-chakra)' }}>
+                            Command Center
+                        </h1>
+                    </div>
+                    <div className="font-mono text-[10px] tracking-[0.12em] text-[#6b7280] uppercase">
+                        System Overview
                     </div>
                 </div>
+            </header>
 
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <main className="container mx-auto p-6 md:p-8 space-y-8">
+                {/* Stats Grid */}
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4" style={{ animation: 'fade-up 0.5s ease-out both' }}>
                     {/* Total Complaints */}
-                    <Card className="bg-white/5 border-white/10 backdrop-blur-md hover:bg-white/10 transition-all duration-300">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-gray-300">Total Complaints</CardTitle>
-                            <FileText className="h-4 w-4 text-blue-400" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-white">{complaintCount || 0}</div>
-                            <p className="text-xs text-gray-400 mt-1">All time reports</p>
-                        </CardContent>
-                    </Card>
+                    <div className="card-tactical p-5">
+                        <div className="flex items-center justify-between mb-3">
+                            <span className="font-mono text-[10px] tracking-[0.15em] text-[#6b7280] uppercase">Total Reports</span>
+                            <div className="w-8 h-8 flex items-center justify-center bg-[#d4a853]/10 border border-[#d4a853]/20">
+                                <FileText className="h-4 w-4 text-[#d4a853]" />
+                            </div>
+                        </div>
+                        <div className="text-3xl font-bold text-[#e8e1d5]" style={{ fontFamily: 'var(--font-chakra)' }}>
+                            {complaintCount || 0}
+                        </div>
+                        <p className="font-mono text-[10px] text-[#6b7280] mt-1 tracking-wider">All time records</p>
+                    </div>
 
                     {/* Active Workers */}
-                    <Link href="/admin/workers">
-                        <Card className="bg-white/5 border-white/10 backdrop-blur-md hover:bg-white/10 transition-all duration-300 cursor-pointer group">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium text-gray-300 group-hover:text-orange-400 transition-colors">Active Workers</CardTitle>
-                                <Users className="h-4 w-4 text-orange-400" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold text-white">{workerCount || 0}</div>
-                                <div className="flex items-center text-xs text-orange-400 mt-1">
-                                    Manage Workers <ArrowRight className="ml-1 h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                    <Link href="/admin/workers" className="block">
+                        <div className="card-tactical p-5 group cursor-pointer hover:border-[#d4a85360] transition-all">
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="font-mono text-[10px] tracking-[0.15em] text-[#d4a853] uppercase group-hover:text-[#f0c040] transition-colors">Field Agents</span>
+                                <div className="w-8 h-8 flex items-center justify-center bg-[#d4a853]/10 border border-[#d4a853]/20">
+                                    <Users className="h-4 w-4 text-[#d4a853]" />
                                 </div>
-                            </CardContent>
-                        </Card>
+                            </div>
+                            <div className="text-3xl font-bold text-[#e8e1d5]" style={{ fontFamily: 'var(--font-chakra)' }}>
+                                {workerCount || 0}
+                            </div>
+                            <div className="flex items-center font-mono text-[10px] text-[#d4a853] mt-1 tracking-wider">
+                                Manage <ArrowRight className="ml-1 h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                            </div>
+                        </div>
                     </Link>
 
                     {/* Pending Issues */}
-                    <Card className="bg-white/5 border-white/10 backdrop-blur-md hover:bg-white/10 transition-all duration-300">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-gray-300">Pending Issues</CardTitle>
-                            <Clock className="h-4 w-4 text-yellow-400" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-white">{pendingCount || 0}</div>
-                            <p className="text-xs text-gray-400 mt-1">Awaiting action</p>
-                        </CardContent>
-                    </Card>
+                    <div className="card-tactical p-5" style={{ borderTopColor: '#f0c040' }}>
+                        <div className="flex items-center justify-between mb-3">
+                            <span className="font-mono text-[10px] tracking-[0.15em] text-[#f0c040] uppercase">Pending</span>
+                            <div className="w-8 h-8 flex items-center justify-center bg-[#f0c040]/10 border border-[#f0c040]/20">
+                                <Clock className="h-4 w-4 text-[#f0c040]" />
+                            </div>
+                        </div>
+                        <div className="text-3xl font-bold text-[#e8e1d5]" style={{ fontFamily: 'var(--font-chakra)' }}>
+                            {pendingCount || 0}
+                        </div>
+                        <p className="font-mono text-[10px] text-[#6b7280] mt-1 tracking-wider">Awaiting action</p>
+                    </div>
 
                     {/* Emergency Incidents */}
-                    <Link href="/admin/incidents">
-                        <Card className="bg-red-950/20 border-red-900/40 backdrop-blur-md hover:bg-red-900/30 transition-all duration-300 cursor-pointer group">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium text-red-400">Emergency Incidents</CardTitle>
-                                <AlertTriangle className="h-4 w-4 text-red-500 group-hover:animate-pulse" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold text-white">{incidentCount || 0}</div>
-                                <div className="flex items-center text-xs text-red-400 mt-1">
-                                    View Emergencies <ArrowRight className="ml-1 h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                    <Link href="/admin/incidents" className="block">
+                        <div className="p-5 bg-[#12151c] border border-[#1e2436] border-t-2 border-t-[#e84040] group cursor-pointer hover:border-[#e8404060] transition-all" style={{ animation: 'fade-up 0.5s ease-out 0.2s both' }}>
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="font-mono text-[10px] tracking-[0.15em] text-[#e84040] uppercase">Emergencies</span>
+                                <div className="w-8 h-8 flex items-center justify-center bg-[#e84040]/10 border border-[#e84040]/20">
+                                    <AlertTriangle className="h-4 w-4 text-[#e84040] group-hover:animate-pulse" />
                                 </div>
-                            </CardContent>
-                        </Card>
+                            </div>
+                            <div className="text-3xl font-bold text-[#e8e1d5]" style={{ fontFamily: 'var(--font-chakra)' }}>
+                                {incidentCount || 0}
+                            </div>
+                            <div className="flex items-center font-mono text-[10px] text-[#e84040] mt-1 tracking-wider">
+                                View All <ArrowRight className="ml-1 h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                            </div>
+                        </div>
                     </Link>
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-                    <Card className="col-span-4 bg-white/5 border-white/10 backdrop-blur-md">
-                        <CardHeader>
-                            <CardTitle className="text-white">Recent Activity</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-gray-400 text-sm">No recent activity logs available.</p>
-                        </CardContent>
-                    </Card>
+                {/* Activity Log */}
+                <div style={{ animation: 'fade-up 0.5s ease-out 0.25s both' }}>
+                    <h2 className="section-header text-lg mb-4">System Activity</h2>
+                    <div className="card-tactical p-6">
+                        <div className="flex items-center gap-3 text-[#6b7280]">
+                            <div className="w-2 h-2 rounded-full bg-[#1e2436]" />
+                            <span className="font-mono text-[11px] tracking-[0.1em]">No recent activity logs available</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </main>
         </div>
     );
 }

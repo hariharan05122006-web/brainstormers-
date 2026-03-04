@@ -39,7 +39,6 @@ export function CitizenLoginForm() {
             setStep(2)
             setMessage('OTP sent to your email!')
         } catch (err: any) {
-            // Suppress console error to prevent Next.js overlay in dev
             if (err.message?.includes('rate limit') || err.message?.includes('Time limit')) {
                 setError('Too many attempts. Please wait 60 seconds before trying again.')
             } else {
@@ -54,20 +53,59 @@ export function CitizenLoginForm() {
         e.preventDefault()
         setLoading(true)
         setError('')
+        setMessage('')
 
         try {
+            const trimmedOtp = otp.trim()
+
+            if (trimmedOtp.length !== 6 && trimmedOtp.length !== 8) {
+                throw new Error('Please enter the 6 or 8-digit code from your email.')
+            }
+
             const { error } = await supabase.auth.verifyOtp({
                 email,
-                token: otp,
+                token: trimmedOtp,
                 type: 'email',
             })
 
-            if (error) throw error
+            if (error) {
+                if (error.message?.includes('expired') || error.message?.includes('invalid')) {
+                    throw new Error('Code has expired or is invalid. Please request a new one.')
+                }
+                throw error
+            }
 
             router.refresh()
             router.push('/dashboard')
         } catch (err: any) {
             setError(err.message)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleResendOTP = async () => {
+        setLoading(true)
+        setError('')
+        setMessage('')
+        setOtp('')
+
+        try {
+            const { error } = await supabase.auth.signInWithOtp({
+                email,
+                options: {
+                    shouldCreateUser: true,
+                },
+            })
+
+            if (error) throw error
+            setMessage('New OTP sent to your email!')
+        } catch (err: any) {
+            if (err.message?.includes('rate limit') || err.message?.includes('Time limit')) {
+                setError('Too many attempts. Please wait 60 seconds before trying again.')
+            } else {
+                setError(err.message || 'Failed to resend OTP')
+            }
         } finally {
             setLoading(false)
         }
@@ -96,39 +134,54 @@ export function CitizenLoginForm() {
     }
 
     return (
-        <Card className="w-full max-w-sm bg-black/80 border-gray-800 text-white backdrop-blur-sm shadow-2xl">
-            <CardHeader className="text-center">
-                <CardTitle className="text-3xl font-bold">Welcome Back</CardTitle>
-                <CardDescription className="text-gray-400">
-                    {step === 1 ? 'Sign in to access your dashboard' : 'Enter the 6-digit code sent to your email'}
+        <Card className="w-full max-w-sm card-tactical corner-marks rounded-none shadow-2xl shadow-black/50">
+            <CardHeader className="text-center pb-4">
+                {/* Tactical header bar */}
+                <div className="flex items-center justify-center gap-2 mb-3">
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#1e2436]" />
+                    <span className="font-mono text-[10px] tracking-[0.2em] text-[#d4a853] uppercase">Citizen Auth</span>
+                    <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#1e2436]" />
+                </div>
+                <CardTitle className="text-2xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-chakra)' }}>
+                    Welcome Back
+                </CardTitle>
+                <CardDescription className="text-[#6b7280] text-sm">
+                    {step === 1 ? 'Sign in to access your dashboard' : 'Enter the code sent to your email'}
                 </CardDescription>
             </CardHeader>
             <CardContent>
                 {step === 1 ? (
                     <div className="space-y-4">
                         {/* Toggle Method */}
-                        <div className="flex justify-center gap-4 mb-4">
-                            <Button
-                                variant={loginMethod === 'otp' ? 'default' : 'ghost'}
+                        <div className="flex rounded overflow-hidden border border-[#1e2436]">
+                            <button
+                                type="button"
                                 onClick={() => setLoginMethod('otp')}
-                                className={loginMethod === 'otp' ? "bg-blue-600 hover:bg-blue-700" : "text-gray-400"}
-                                size="sm"
+                                className={`flex-1 py-2 text-xs font-semibold tracking-wider uppercase transition-all cursor-pointer ${loginMethod === 'otp'
+                                    ? 'bg-[#d4a853] text-[#0a0c10]'
+                                    : 'bg-[#0a0c10] text-[#6b7280] hover:text-[#e8e1d5]'
+                                    }`}
+                                style={{ fontFamily: 'var(--font-chakra)' }}
                             >
                                 OTP Login
-                            </Button>
-                            <Button
-                                variant={loginMethod === 'password' ? 'default' : 'ghost'}
+                            </button>
+                            <button
+                                type="button"
                                 onClick={() => setLoginMethod('password')}
-                                className={loginMethod === 'password' ? "bg-blue-600 hover:bg-blue-700" : "text-gray-400"}
-                                size="sm"
+                                className={`flex-1 py-2 text-xs font-semibold tracking-wider uppercase transition-all cursor-pointer ${loginMethod === 'password'
+                                    ? 'bg-[#d4a853] text-[#0a0c10]'
+                                    : 'bg-[#0a0c10] text-[#6b7280] hover:text-[#e8e1d5]'
+                                    }`}
+                                style={{ fontFamily: 'var(--font-chakra)' }}
                             >
-                                Password Login
-                            </Button>
+                                Password
+                            </button>
                         </div>
 
                         {loginMethod === 'otp' ? (
                             <form onSubmit={handleSendOTP} className="space-y-4">
-                                <div className="space-y-2">
+                                <div className="space-y-1.5">
+                                    <label className="font-mono text-[10px] tracking-[0.15em] text-[#d4a853] uppercase">Email Address</label>
                                     <Input
                                         id="email"
                                         type="email"
@@ -136,20 +189,29 @@ export function CitizenLoginForm() {
                                         required
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="bg-gray-900/50 border-gray-700 text-white placeholder:text-gray-500 h-12"
+                                        className="input-tactical h-12 rounded-none"
                                     />
                                 </div>
 
-                                {error && <Alert variant="destructive" className="bg-red-900/50 border-red-900 text-red-200"><AlertDescription>{error}</AlertDescription></Alert>}
-                                {message && <Alert className="bg-green-900/50 border-green-900 text-green-200"><AlertDescription>{message}</AlertDescription></Alert>}
+                                {error && (
+                                    <div className="p-3 bg-[#e84040]/10 border border-[#e84040]/30 text-[#e84040] text-sm rounded-none">
+                                        <span className="font-mono text-[10px] tracking-wider uppercase mr-2">⚠ Alert:</span>{error}
+                                    </div>
+                                )}
+                                {message && (
+                                    <div className="p-3 bg-[#2dd4a8]/10 border border-[#2dd4a8]/30 text-[#2dd4a8] text-sm rounded-none">
+                                        <span className="font-mono text-[10px] tracking-wider uppercase mr-2">✓ Status:</span>{message}
+                                    </div>
+                                )}
 
-                                <Button type="submit" className="w-full h-12 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white border-0" disabled={loading}>
-                                    {loading ? 'Sending OTP...' : 'Send OTP'}
-                                </Button>
+                                <button type="submit" className="btn-command w-full h-12 text-sm rounded-none cursor-pointer" disabled={loading}>
+                                    {loading ? 'Transmitting...' : 'Send OTP'}
+                                </button>
                             </form>
                         ) : (
                             <form onSubmit={handlePasswordLogin} className="space-y-4">
-                                <div className="space-y-2">
+                                <div className="space-y-1.5">
+                                    <label className="font-mono text-[10px] tracking-[0.15em] text-[#d4a853] uppercase">Email Address</label>
                                     <Input
                                         id="email"
                                         type="email"
@@ -157,32 +219,38 @@ export function CitizenLoginForm() {
                                         required
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="bg-gray-900/50 border-gray-700 text-white placeholder:text-gray-500 h-12"
+                                        className="input-tactical h-12 rounded-none"
                                     />
                                 </div>
-                                <div className="space-y-2">
+                                <div className="space-y-1.5">
+                                    <label className="font-mono text-[10px] tracking-[0.15em] text-[#d4a853] uppercase">Password</label>
                                     <Input
                                         id="password"
                                         type="password"
-                                        placeholder="Password"
+                                        placeholder="••••••••"
                                         required
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="bg-gray-900/50 border-gray-700 text-white placeholder:text-gray-500 h-12"
+                                        className="input-tactical h-12 rounded-none"
                                     />
                                 </div>
 
-                                {error && <Alert variant="destructive" className="bg-red-900/50 border-red-900 text-red-200"><AlertDescription>{error}</AlertDescription></Alert>}
+                                {error && (
+                                    <div className="p-3 bg-[#e84040]/10 border border-[#e84040]/30 text-[#e84040] text-sm rounded-none">
+                                        <span className="font-mono text-[10px] tracking-wider uppercase mr-2">⚠ Alert:</span>{error}
+                                    </div>
+                                )}
 
-                                <Button type="submit" className="w-full h-12 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white border-0" disabled={loading}>
-                                    {loading ? 'Logging In...' : 'Login'}
-                                </Button>
+                                <button type="submit" className="btn-command w-full h-12 text-sm rounded-none cursor-pointer" disabled={loading}>
+                                    {loading ? 'Authenticating...' : 'Login'}
+                                </button>
                             </form>
                         )}
                     </div>
                 ) : (
                     <form onSubmit={handleVerifyOTP} className="space-y-4">
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
+                            <label className="font-mono text-[10px] tracking-[0.15em] text-[#d4a853] uppercase">Verification Code</label>
                             <Input
                                 id="otp"
                                 type="text"
@@ -190,25 +258,44 @@ export function CitizenLoginForm() {
                                 required
                                 maxLength={8}
                                 value={otp}
-                                onChange={(e) => setOtp(e.target.value)}
-                                className="bg-gray-900/50 border-gray-700 text-white placeholder:text-gray-500 h-12 text-center text-2xl tracking-[1em]"
+                                onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ''))}
+                                className="input-tactical h-14 rounded-none text-center text-2xl tracking-[0.5em]"
+                                style={{ fontFamily: 'var(--font-chakra)' }}
                             />
                         </div>
 
-                        {error && <Alert variant="destructive" className="bg-red-900/50 border-red-900 text-red-200"><AlertDescription>{error}</AlertDescription></Alert>}
+                        {error && (
+                            <div className="p-3 bg-[#e84040]/10 border border-[#e84040]/30 text-[#e84040] text-sm rounded-none">
+                                <span className="font-mono text-[10px] tracking-wider uppercase mr-2">⚠ Alert:</span>{error}
+                            </div>
+                        )}
+                        {message && (
+                            <div className="p-3 bg-[#2dd4a8]/10 border border-[#2dd4a8]/30 text-[#2dd4a8] text-sm rounded-none">
+                                <span className="font-mono text-[10px] tracking-wider uppercase mr-2">✓ Status:</span>{message}
+                            </div>
+                        )}
 
-                        <Button type="submit" className="w-full h-12 text-lg font-semibold bg-green-600 hover:bg-green-700 text-white border-0" disabled={loading}>
-                            {loading ? 'Verifying...' : 'Verify OTP'}
-                        </Button>
+                        <button type="submit" className="w-full h-12 text-sm rounded-none cursor-pointer bg-[#2dd4a8] text-[#0a0c10] font-semibold uppercase tracking-wider hover:bg-[#3ae4b8] transition-all" style={{ fontFamily: 'var(--font-chakra)' }} disabled={loading}>
+                            {loading ? 'Verifying...' : 'Verify Code'}
+                        </button>
 
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            className="w-full text-gray-400 hover:text-white"
-                            onClick={() => setStep(1)}
-                        >
-                            Change Email
-                        </Button>
+                        <div className="flex items-center justify-between">
+                            <button
+                                type="button"
+                                className="text-sm text-[#6b7280] hover:text-[#d4a853] transition-colors cursor-pointer py-2"
+                                onClick={() => { setStep(1); setError(''); setMessage(''); setOtp(''); }}
+                            >
+                                ← Change Email
+                            </button>
+                            <button
+                                type="button"
+                                className="text-sm text-[#6b7280] hover:text-[#2dd4a8] transition-colors cursor-pointer py-2"
+                                onClick={handleResendOTP}
+                                disabled={loading}
+                            >
+                                Resend Code →
+                            </button>
+                        </div>
                     </form>
                 )}
             </CardContent>

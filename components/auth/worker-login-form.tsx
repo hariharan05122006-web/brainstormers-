@@ -36,7 +36,6 @@ export function WorkerLoginForm() {
                 email = `worker_${email}@scsms.local`
             }
 
-            // 1. Attempt login
             const { data: { user }, error: authError } = await supabase.auth.signInWithPassword({
                 email,
                 password: password.trim(),
@@ -44,31 +43,23 @@ export function WorkerLoginForm() {
 
             if (authError || !user) {
                 console.error("Auth Error:", authError);
-                throw new Error('Invalid credentials.')
+                throw new Error(authError?.message || 'Invalid credentials.')
             }
 
-            // 2. Verify Department Match
-            // Fetch the worker profile to check department_id
             const { data: worker, error: workerError } = await supabase
                 .from('workers')
                 .select('department_id, departments(type)')
-                .eq('email', user.email) // Assuming 1:1 mapping by email
+                .eq('email', user.email)
                 .single()
 
             if (workerError || !worker) {
-                // Clean up session if worker profile missing
                 await supabase.auth.signOut();
                 console.error("Worker Profile Error:", workerError);
                 throw new Error('Worker profile not found. Contact Admin.')
             }
 
-            // Check if selected department matches the worker's actual department type
-            // worker.departments is an object/array because of the join.
-            // .single() on the main query means 'worker' is one object.
-            // 'departments' will be an array or object depending on relationship. 
-            // Usually it's an object if foreign key is used.
-            // Let's safe check.
-            const workerDeptType = Array.isArray(worker.departments) ? worker.departments[0]?.type : worker.departments?.type;
+            const workerData = worker as any;
+            const workerDeptType = Array.isArray(workerData.departments) ? workerData.departments[0]?.type : workerData.departments?.type;
 
             if (workerDeptType !== department) {
                 await supabase.auth.signOut();
@@ -85,43 +76,50 @@ export function WorkerLoginForm() {
     }
 
     return (
-        <Card className="w-full max-w-sm bg-black/80 border-gray-800 text-white backdrop-blur-sm shadow-2xl">
-            <CardHeader className="text-center">
-                <CardTitle className="text-3xl font-bold">Worker Portal</CardTitle>
-                <CardDescription className="text-gray-400">
-                    Select department and enter your ID.
+        <Card className="w-full max-w-sm card-tactical corner-marks rounded-none shadow-2xl shadow-black/50">
+            <CardHeader className="text-center pb-4">
+                <div className="flex items-center justify-center gap-2 mb-3">
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#1e2436]" />
+                    <span className="font-mono text-[10px] tracking-[0.2em] text-[#d4a853] uppercase">Field Ops</span>
+                    <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#1e2436]" />
+                </div>
+                <CardTitle className="text-2xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-chakra)' }}>
+                    Worker Portal
+                </CardTitle>
+                <CardDescription className="text-[#6b7280] text-sm">
+                    Select department and enter credentials
                 </CardDescription>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleLogin} className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="dept" className="text-gray-300">Department</Label>
+                    <div className="space-y-1.5">
+                        <label className="font-mono text-[10px] tracking-[0.15em] text-[#d4a853] uppercase">Department</label>
                         <Select onValueChange={setDepartment} value={department}>
-                            <SelectTrigger id="dept" className="bg-gray-900/50 border-gray-700 text-white h-12">
+                            <SelectTrigger id="dept" className="input-tactical h-12 rounded-none [&>span]:text-[#e8e1d5]">
                                 <SelectValue placeholder="Select Department" />
                             </SelectTrigger>
-                            <SelectContent className="bg-gray-900 border-gray-800 text-white">
-                                <SelectItem value="electrical" className="focus:bg-gray-800 focus:text-white">Electrical</SelectItem>
-                                <SelectItem value="road" className="focus:bg-gray-800 focus:text-white">Road</SelectItem>
-                                <SelectItem value="water" className="focus:bg-gray-800 focus:text-white">Water</SelectItem>
-                                <SelectItem value="police" className="focus:bg-gray-800 focus:text-white">Police</SelectItem>
-                                <SelectItem value="maintenance" className="focus:bg-gray-800 focus:text-white">Maintenance</SelectItem>
+                            <SelectContent className="bg-[#12151c] border-[#1e2436] text-[#e8e1d5] rounded-none">
+                                <SelectItem value="electrical" className="focus:bg-[#1e2436] focus:text-[#d4a853]">⚡ Electrical</SelectItem>
+                                <SelectItem value="road" className="focus:bg-[#1e2436] focus:text-[#d4a853]">🛣 Road</SelectItem>
+                                <SelectItem value="water" className="focus:bg-[#1e2436] focus:text-[#d4a853]">💧 Water</SelectItem>
+                                <SelectItem value="police" className="focus:bg-[#1e2436] focus:text-[#d4a853]">🛡 Police</SelectItem>
+                                <SelectItem value="maintenance" className="focus:bg-[#1e2436] focus:text-[#d4a853]">🔧 Maintenance</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="workerId" className="text-gray-300">Worker ID</Label>
+                    <div className="space-y-1.5">
+                        <label className="font-mono text-[10px] tracking-[0.15em] text-[#d4a853] uppercase">Worker ID</label>
                         <Input
                             id="workerId"
                             placeholder="e.g. W-101"
                             required
                             value={workerId}
                             onChange={(e) => setWorkerId(e.target.value)}
-                            className="bg-gray-900/50 border-gray-700 text-white placeholder:text-gray-500 h-12"
+                            className="input-tactical h-12 rounded-none"
                         />
                     </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="password" className="text-gray-300">Password</Label>
+                    <div className="space-y-1.5">
+                        <label className="font-mono text-[10px] tracking-[0.15em] text-[#d4a853] uppercase">Password</label>
                         <Input
                             id="password"
                             type="password"
@@ -129,13 +127,19 @@ export function WorkerLoginForm() {
                             placeholder="••••••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="bg-gray-900/50 border-gray-700 text-white placeholder:text-gray-500 h-12"
+                            className="input-tactical h-12 rounded-none"
                         />
                     </div>
-                    {error && <Alert variant="destructive" className="bg-red-900/50 border-red-900 text-red-200"><AlertDescription>{error}</AlertDescription></Alert>}
-                    <Button type="submit" className="w-full h-12 text-lg font-semibold bg-orange-600 hover:bg-orange-700 text-white border-0" disabled={loading}>
-                        {loading ? 'Verifying...' : 'Login'}
-                    </Button>
+
+                    {error && (
+                        <div className="p-3 bg-[#e84040]/10 border border-[#e84040]/30 text-[#e84040] text-sm rounded-none">
+                            <span className="font-mono text-[10px] tracking-wider uppercase mr-2">⚠ Alert:</span>{error}
+                        </div>
+                    )}
+
+                    <button type="submit" className="btn-command w-full h-12 text-sm rounded-none cursor-pointer" disabled={loading}>
+                        {loading ? 'Authenticating...' : 'Access Portal'}
+                    </button>
                 </form>
             </CardContent>
         </Card>
