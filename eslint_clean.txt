@@ -1,0 +1,81 @@
+
+C:\Users\ishwarya\Downloads\good-one--main\actions\complete-work.ts
+   5:10  warning  'redirect' is defined but never used      @typescript-eslint/no-unused-vars
+  98:19  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\ishwarya\Downloads\good-one--main\app\[locale]\admin\dashboard\page.tsx
+  3:10  warning  'Card' is defined but never used         @typescript-eslint/no-unused-vars
+  3:16  warning  'CardContent' is defined but never used  @typescript-eslint/no-unused-vars
+  3:29  warning  'CardHeader' is defined but never used   @typescript-eslint/no-unused-vars
+  3:41  warning  'CardTitle' is defined but never used    @typescript-eslint/no-unused-vars
+
+C:\Users\ishwarya\Downloads\good-one--main\app\[locale]\admin\workers\page.tsx
+  6:16  warning  'Users' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\ishwarya\Downloads\good-one--main\app\[locale]\dashboard\page.tsx
+   3:10  warning  'Card' is defined but never used             @typescript-eslint/no-unused-vars
+   3:16  warning  'CardContent' is defined but never used      @typescript-eslint/no-unused-vars
+   3:29  warning  'CardHeader' is defined but never used       @typescript-eslint/no-unused-vars
+   3:41  warning  'CardTitle' is defined but never used        @typescript-eslint/no-unused-vars
+   3:52  warning  'CardDescription' is defined but never used  @typescript-eslint/no-unused-vars
+   4:10  warning  'Badge' is defined but never used            @typescript-eslint/no-unused-vars
+   5:10  warning  'Button' is defined but never used           @typescript-eslint/no-unused-vars
+  21:31  warning  'error' is assigned a value but never used   @typescript-eslint/no-unused-vars
+
+C:\Users\ishwarya\Downloads\good-one--main\app\[locale]\page.tsx
+  6:11  warning  't' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\ishwarya\Downloads\good-one--main\app\[locale]\worker\dashboard\page.tsx
+  3:10  warning  'Button' is defined but never used  @typescript-eslint/no-unused-vars
+  4:10  warning  'Badge' is defined but never used   @typescript-eslint/no-unused-vars
+
+C:\Users\ishwarya\Downloads\good-one--main\components\auth\admin-login-form.tsx
+   5:10  warning  'Button' is defined but never used            @typescript-eslint/no-unused-vars
+   8:10  warning  'Label' is defined but never used             @typescript-eslint/no-unused-vars
+  10:10  warning  'Alert' is defined but never used             @typescript-eslint/no-unused-vars
+  10:17  warning  'AlertDescription' is defined but never used  @typescript-eslint/no-unused-vars
+  42:23  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  69:23  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  91:23  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+C:\Users\ishwarya\Downloads\good-one--main\components\auth\citizen-login-form.tsx
+   6:10  warning  'Button' is defined but never used            @typescript-eslint/no-unused-vars
+   9:10  warning  'Alert' is defined but never used             @typescript-eslint/no-unused-vars
+   9:17  warning  'AlertDescription' is defined but never used  @typescript-eslint/no-unused-vars
+  41:23  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  68:23  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  90:23  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+C:\Users\ishwarya\Downloads\good-one--main\components\auth\worker-login-form.tsx
+   6:10  warning  'Button' is defined but never used            @typescript-eslint/no-unused-vars
+   8:10  warning  'Label' is defined but never used             @typescript-eslint/no-unused-vars
+  10:10  warning  'Alert' is defined but never used             @typescript-eslint/no-unused-vars
+  10:17  warning  'AlertDescription' is defined but never used  @typescript-eslint/no-unused-vars
+  70:23  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+C:\Users\ishwarya\Downloads\good-one--main\components\citizen\complaint-form.tsx
+   13:27  warning  'Upload' is defined but never used        @typescript-eslint/no-unused-vars
+   47:14  warning  'err' is defined but never used           @typescript-eslint/no-unused-vars
+  106:23  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\ishwarya\Downloads\good-one--main\components\citizen\incident-form.tsx
+  41:14  warning  'err' is defined but never used           @typescript-eslint/no-unused-vars
+  83:23  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\ishwarya\Downloads\good-one--main\components\notifications\notification-bell.tsx
+  73:8  warning  React Hook useEffect has a missing dependency: 'supabase'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\ishwarya\Downloads\good-one--main\components\worker\task-resolution.tsx
+  12:32  warning  'Upload' is defined but never used        @typescript-eslint/no-unused-vars
+  80:23  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\ishwarya\Downloads\good-one--main\i18n.ts
+  1:10  warning  'notFound' is defined but never used      @typescript-eslint/no-unused-vars
+  9:48  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\ishwarya\Downloads\good-one--main\utils\supabase\server.ts
+  1:35  warning  'CookieOptions' is defined but never used  @typescript-eslint/no-unused-vars
+
+??? 47 problems (12 errors, 35 warnings)
+
+
