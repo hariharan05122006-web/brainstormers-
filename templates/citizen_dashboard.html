@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Citizen Dashboard</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <div class="dashboard-header">
+        <h2>Welcome, <span id="user-name">Citizen</span></h2>
+        <button onclick="logout()" class="btn logout-btn">Logout</button>
+    </div>
+
+    <div class="container">
+        <!-- New Complaint Section -->
+        <div class="card">
+            <h3 style="margin-bottom: 1rem;">Register New Complaint</h3>
+            <form onsubmit="handleComplaintSubmit(event)">
+                <div class="form-group">
+                    <label class="form-label">Title</label>
+                    <input type="text" id="title" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Department</label>
+                    <select id="department" class="form-input" required>
+                        <option value="">Select Department</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea id="description" class="form-input" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn">Submit Complaint</button>
+            </form>
+        </div>
+
+        <!-- History Section -->
+        <h3 style="margin: 2rem 0 1rem;">My Complaints History</h3>
+        <div id="complaints-list">
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', loadCitizenDashboard);
+    </script>
+</body>
+
+</html>

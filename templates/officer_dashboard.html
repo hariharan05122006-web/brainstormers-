@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Officer Dashboard</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <div class="dashboard-header">
+        <h2>Officer Dashboard: <span id="officer-name"></span></h2>
+        <button onclick="logout()" class="btn logout-btn">Logout</button>
+    </div>
+
+    <div class="container">
+        <h3 style="margin-bottom: 1rem;">Assigned Complaints</h3>
+        <div id="complaints-list">
+            <p>Loading assigned complaints...</p>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', loadOfficerDashboard);
+    </script>
+</body>
+
+</html>

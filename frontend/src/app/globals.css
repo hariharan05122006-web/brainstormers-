@@ -1,0 +1,125 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: calc(var(--radius) - 1px);
+  --radius-lg: var(--radius);
+}
+
+:root {
+  --radius: 0.5rem;
+  /* Sharper radius */
+
+  /* Minimalist Enterprise Palette (Linear-style) */
+  --background: oklch(1 0 0);
+  /* Pure White */
+  --foreground: oklch(0.13 0.01 260);
+  /* Almost Black */
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.13 0.01 260);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.13 0.01 260);
+
+  --primary: oklch(0.13 0.01 260);
+  /* Black Primary */
+  --primary-foreground: oklch(1 0 0);
+  /* White Text */
+
+  --secondary: oklch(0.97 0 0);
+  /* Very Light Gray */
+  --secondary-foreground: oklch(0.13 0.01 260);
+
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.55 0 0);
+  /* Gray Text */
+
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.13 0.01 260);
+
+  --destructive: oklch(0.6 0.15 20);
+  --destructive-foreground: oklch(0.98 0 0);
+
+  --border: oklch(0.92 0 0);
+  /* Subtle Border */
+  --input: oklch(0.92 0 0);
+  --ring: oklch(0.13 0 0);
+  /* Focus Ring Black */
+}
+
+.dark {
+  --background: oklch(0.1 0 0);
+  /* Pitch Black */
+  --foreground: oklch(0.98 0 0);
+  /* White */
+
+  --card: oklch(0.12 0 0);
+  /* Dark Gray Card */
+  --card-foreground: oklch(0.98 0 0);
+
+  --popover: oklch(0.12 0 0);
+  --popover-foreground: oklch(0.98 0 0);
+
+  --primary: oklch(0.98 0 0);
+  /* White Primary */
+  --primary-foreground: oklch(0.1 0 0);
+  /* Black Text */
+
+  --secondary: oklch(0.15 0 0);
+  --secondary-foreground: oklch(0.98 0 0);
+
+  --muted: oklch(0.15 0 0);
+  --muted-foreground: oklch(0.65 0 0);
+
+  --accent: oklch(0.15 0 0);
+  --accent-foreground: oklch(0.98 0 0);
+
+  --destructive: oklch(0.4 0.2 25);
+  --destructive-foreground: oklch(0.98 0 0);
+
+  --border: oklch(0.2 0 0);
+  --input: oklch(0.2 0 0);
+  --ring: oklch(0.8 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    /* Removed large gradients for cleaner look */
+  }
+}
